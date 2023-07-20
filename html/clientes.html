@@ -1,13 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Clientes Cadastrados</title>
 </head>
 <body>
-    <script src="../js/app.js">
-        displayCustomers();
+    <script type="module" src="../js/app.js">
+        getAllClients();
     </script>
     <h1>Clientes Cadastrados</h1>
     <div id="output"></div>
+
+    <button id="gerarCliente">gerar cliente</button>
+    <input type="number" name="" id="delete" placeholder="delete">
+    <button id="delClient">Deletar cliente</button>
+
+
+
+    <div class="container">
+        <h1>Edição de Clientes</h1>
+        <input type="number" name="" id="update" placeholder="digite o id do cliente a ser editado">
+        <br> <br>
+        <form id="customerForm">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" required>
+
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" required>
+
+            <label for="phone">Telefone:</label>
+            <input type="tel" id="phone" required>
+
+            <label for="address">Endereço:</label>
+            <input type="tel" id="address" required>
+
+            <label for="CPF">CPF:</label>
+            <input type="" id="cpf" required>
+
+            <button type="submit" id="updateButton">Editar</button>
+        </form>
+    </div>
+
 </body>
 </html>
