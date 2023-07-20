@@ -1,63 +1,97 @@
-// Array para armazenar os clientes e  função para adicionar um novo cliente ao array
-const customers = [];
+import axios from "axios";
+let alterusuario = {};
+let allClients = [];
+let id;
+const outputDiv = document.getElementById("output");
+const buttonGerarCliente = document.getElementById("gerarCliente");
+const buttonDelClient = document.getElementById("delClient");
+const buttonUpdateClient = document.getElementById("updateButton");
 
-function addCustomer(name, email, phone, address, cpf) {
-    const customer = {
+
+buttonGerarCliente.addEventListener("click", () => {
+    getAllClients();
+});
+
+// Função para adicionar um cliente na DB
+
+async function addClient() {
+    await axios
+        .post("http://localhost:3333/", novousuario)
+        .then(() => {
+            console.log("Criada!");
+        })
+        .catch((err) => {
+            console.warn(err);
+        });
+}
+
+async function getAllClients() {
+    await axios.get("http://localhost:3333/").then((response) => {
+        const { data } = response;
+        allClients = data;
+        console.log("Salve", allClients);
+        displayCustomers();
+    });
+}
+
+// buttonDelClient.addEventListener("click", () => {
+//     id = document.getElementById("delete").value;
+//     deleteClient(id);
+// });
+
+async function deleteClient(id) {
+    await axios
+        .delete(`http://localhost:3333/ ${id}`)
+        .then((e) => {
+            console.log("Sucesso.");
+        })
+        .catch((error) => console.warn(error));
+}
+
+buttonUpdateClient.addEventListener("click", () => {
+    id = document.getElementById("update").value;
+    handleFormUpdate();
+});
+
+function handleFormUpdate() {
+    const name = document.getElementById("name").value;
+    const mail = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const address = document.getElementById("address").value;
+    const cpf = document.getElementById("cpf").value;
+
+    alterusuario = {
         name: name,
-        email: email,
+        mail: mail,
         phone: phone,
         address: address,
         cpf: cpf,
     };
-    customers.push(customer);
+
+    // Edita o usuário após o cadastro
+    document.getElementById("customerForm").reset();
+    updateClient(id);
 }
 
-// Função para adicionar um novo cliente ao localStorage
-function addCustomer(name, email, phone, address, cpf) {
-    // Verifica se já existem clientes no localStorage
-    let customersArray = JSON.parse(localStorage.getItem("customers")) || [];
-
-    // Verifica se o cliente com o mesmo e-mail já está cadastrado
-    const existingCustomer = customersArray.find(
-        (customer) => customer.email === email || customer.cpf === cpf
-    );
-
-    if (existingCustomer) {
-        alert("Cliente com o mesmo e-mail ou cpf já cadastrado.");
-        return;
-    }
-
-    // Adiciona o novo cliente ao array
-    const customer = {
-        name: name,
-        email: email,
-        phone: phone,
-        address: address,
-        cpf: cpf,
-    };
-    customersArray.push(customer);
-
-    // Atualiza o localStorage com o array atualizado
-    localStorage.setItem("customers", JSON.stringify(customersArray));
+async function updateClient(id) {
+    await axios
+        .put(`http://localhost:3333/ ${id}`, alterusuario)
+        .then((e) => {
+            console.log("Sucesso");
+        })
+        .catch((error) => console.error(error));
 }
 
-// Exibe todos os clientes cadastrados no localStorage
 function displayCustomers() {
-    const outputDiv = document.getElementById("output");
-    outputDiv.innerHTML = "";
-
-    // Obtém os clientes do localStorage
-    let customersArray = JSON.parse(localStorage.getItem("customers")) || [];
-
-    if (customersArray.length === 0) {
+    if (allClients.length === 0) {
         outputDiv.innerHTML = "<p>Nenhum cliente cadastrado.</p>";
         return;
     }
 
     const ul = document.createElement("ul");
-    customersArray.forEach((customer) => {
+    allClients.forEach((allClients) => {
         const li = document.createElement("li");
-        li.textContent = `Nome: ${customer.name}, E-mail: ${customer.email}, Telefone: ${customer.phone}, Endereço: ${customer.address}, CPF: ${customer.cpf}`;
+        li.textContent = `Nome: ${allClients.nome}, E-mail: ${allClients.email}, Telefone: ${allClients.telefone}, Endereço: ${allClients.endereco}, CPF: ${allClients.cpf}`;
         ul.appendChild(li);
     });
     outputDiv.appendChild(ul);
@@ -65,7 +99,13 @@ function displayCustomers() {
 
 // Função para validar os dados do formulário
 function validateForm(name, email, phone, address, cpf) {
-    if (name.trim() === "" || email.trim() === "" || phone.trim() === "" || address === "" || cpf === "") {
+    if (
+        name.trim() === "" ||
+        email.trim() === "" ||
+        phone.trim() === "" ||
+        address === "" ||
+        cpf === ""
+    ) {
         alert("Por favor, preencha todos os campos.");
         return false;
     }
@@ -73,28 +113,6 @@ function validateForm(name, email, phone, address, cpf) {
     return true;
 }
 
-// Função para lidar com o envio do formulário
-function handleFormSubmit(event) {
-    event.preventDefault();
-
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const telefone = document.getElementById("phone").value;
-    const endereco = document.getElementById("address").value;
-    const cpf = document.getElementById("cpf").value;
-
-    if (validateForm(name, email, telefone, endereco, cpf)) {
-        addCustomer(name, email, telefone, endereco, cpf);
-        displayCustomers();
-
-        // Limpa o formulário após o cadastro
-        document.getElementById("customerForm").reset();
-    }
-}
-
 // Event listener para o envio do formulário
 const form = document.getElementById("customerForm");
-form.addEventListener("submit", handleFormSubmit);
-
-// // Exibe os clientes cadastrados ao carregar a página
-displayCustomers();
+// form.addEventListener("submit", handleFormSubmit);
